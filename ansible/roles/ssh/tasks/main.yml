@@ -1,0 +1,15 @@
+---
+- name: Ensure SSH hardening configuration exists
+  become: true
+  copy:
+    dest: /etc/ssh/sshd_config.d/99-devops-hardening.conf
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      PasswordAuthentication no
+      PermitRootLogin no
+      PubkeyAuthentication yes
+      KbdInteractiveAuthentication no
+      ChallengeResponseAuthentication no
+  notify: Restart SSH

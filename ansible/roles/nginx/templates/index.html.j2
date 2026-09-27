@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ inventory_hostname }}</title>
+</head>
+<body>
+    <h1>Server: {{ inventory_hostname }}</h1>
+    <p>Hostname: {{ ansible_hostname }}</p>
+    <p>Current Time: <span id="time"></span></p>
+
+    <script>
+        document.getElementById("time").textContent = new Date().toISOString();
+    </script>
+</body>
+</html>

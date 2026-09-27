@@ -1,0 +1,15 @@
+---
+- name: Create SSH directory for ansible_user
+  become: true
+  file:
+    path: /home/ansible_user/.ssh
+    state: directory
+    owner: ansible_user
+    group: ansible_user
+    mode: '0700'
+
+- name: Add SSH public key for ansible_user
+  become: true
+  authorized_key:
+    user: ansible_user
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_ed25519.pub') }}"

@@ -1,0 +1,33 @@
+---
+- name: Install Nginx
+  become: true
+  apt:
+    name: nginx
+    state: present
+
+- name: Ensure Nginx is running
+  become: true
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Deploy dynamic Nginx page
+  become: true
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Deploy Nginx reverse proxy configuration on vm1
+  become: true
+  template:
+    src: default.conf.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: '0644'
+  when: inventory_hostname == "vm1"
+  notify: Restart Nginx

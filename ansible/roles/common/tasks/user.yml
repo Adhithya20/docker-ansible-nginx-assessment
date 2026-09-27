@@ -1,0 +1,19 @@
+---
+- name: Create ansible_user
+  become: true
+  user:
+    name: ansible_user
+    shell: /bin/bash
+    groups: sudo
+    append: true
+    create_home: true
+
+- name: Configure passwordless sudo for ansible_user
+  become: true
+  copy:
+    dest: /etc/sudoers.d/ansible_user
+    owner: root
+    group: root
+    mode: '0440'
+    content: |
+      ansible_user ALL=(ALL) NOPASSWD:ALL

@@ -1,0 +1,42 @@
+upstream backend_pool {
+    server 172.20.0.20:80 max_fails=3 fail_timeout=5s;
+    server 172.20.0.30:80 max_fails=3 fail_timeout=5s;
+}
+
+server {
+    listen 80;
+    server_name public.vm1.local;
+
+    return 301 https://public.vm1.local:18443$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name public.vm1.local;
+
+    ssl_certificate /etc/nginx/ssl/public.vm1.local.crt;
+    ssl_certificate_key /etc/nginx/ssl/public.vm1.local.key;
+
+    location / {
+        root /var/www/html;
+        index index.html;
+    }
+
+    location /vm2/ {
+        proxy_pass http://172.20.0.20/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /vm3/ {
+        proxy_pass http://172.20.0.30/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /app/ {
+        proxy_pass http://backend_pool/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
